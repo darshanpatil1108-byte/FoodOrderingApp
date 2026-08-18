@@ -15,7 +15,7 @@ public class PaymentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+                           HttpServletResponse response)
             throws ServletException, IOException {
 
         // Get checkout details
@@ -26,7 +26,7 @@ public class PaymentServlet extends HttpServlet {
         String pinCode = request.getParameter("pinCode");
         String paymentMethod = request.getParameter("paymentMethod");
 
-        // For now, simply show order success page
+        // Put values into request attributes
         request.setAttribute("fullName", fullName);
         request.setAttribute("mobile", mobile);
         request.setAttribute("address", address);
@@ -34,13 +34,14 @@ public class PaymentServlet extends HttpServlet {
         request.setAttribute("pinCode", pinCode);
         request.setAttribute("paymentMethod", paymentMethod);
 
+        // Forward to order success page
         request.getRequestDispatcher("/jsp/order-success.jsp")
                .forward(request, response);
     }
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
         response.sendRedirect(

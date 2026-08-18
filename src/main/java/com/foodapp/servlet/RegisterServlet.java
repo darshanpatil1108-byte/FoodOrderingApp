@@ -23,18 +23,42 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Get data from register.jsp
-        String fullName = request.getParameter("name");
+        String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
+        String address = request.getParameter("address");
+
+        // Debug information
+        System.out.println("========== REGISTRATION DATA ==========");
+        System.out.println("Full Name: " + fullName);
+        System.out.println("Email: " + email);
+        System.out.println("Phone: " + phone);
+        System.out.println("Address: " + address);
+        System.out.println("=======================================");
+
+        // Check required fields
+        if (fullName == null || fullName.trim().isEmpty()
+                || email == null || email.trim().isEmpty()
+                || phone == null || phone.trim().isEmpty()
+                || password == null || password.trim().isEmpty()
+                || address == null || address.trim().isEmpty()) {
+
+            response.sendRedirect(
+                request.getContextPath()
+                + "/jsp/register.jsp?error=failed"
+            );
+
+            return;
+        }
 
         // Check password
         if (!password.equals(confirmPassword)) {
 
             response.sendRedirect(
-                request.getContextPath() +
-                "/jsp/register.jsp?error=password"
+                request.getContextPath()
+                + "/jsp/register.jsp?error=password"
             );
 
             return;
@@ -43,13 +67,11 @@ public class RegisterServlet extends HttpServlet {
         // Create User object
         User user = new User();
 
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPhone(phone);
+        user.setFullName(fullName.trim());
+        user.setEmail(email.trim());
+        user.setPhone(phone.trim());
         user.setPassword(password);
-
-        // Address is not currently in our registration form
-        user.setAddress("");
+        user.setAddress(address.trim());
 
         // DAO
         UserDAO dao = new UserDAOImpl();
@@ -59,18 +81,20 @@ public class RegisterServlet extends HttpServlet {
 
         if (result) {
 
-            // Registration successful
+            System.out.println("USER REGISTERED SUCCESSFULLY");
+
             response.sendRedirect(
-                request.getContextPath() +
-                "/jsp/login.jsp?success=registered"
+                request.getContextPath()
+                + "/jsp/login.jsp?success=registered"
             );
 
         } else {
 
-            // Registration failed
+            System.out.println("REGISTRATION FAILED");
+
             response.sendRedirect(
-                request.getContextPath() +
-                "/jsp/register.jsp?error=failed"
+                request.getContextPath()
+                + "/jsp/register.jsp?error=failed"
             );
         }
     }
