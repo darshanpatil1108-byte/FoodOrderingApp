@@ -18,16 +18,51 @@ public class RestaurantServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    protected void doGet(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
+
+        String keyword = request.getParameter("search");
 
         RestaurantDAO dao = new RestaurantDAOImpl();
 
-        List<Restaurant> restaurants = dao.getAllRestaurants();
+        List<Restaurant> restaurants;
 
-        request.setAttribute("restaurants", restaurants);
+        try {
 
-        request.getRequestDispatcher("jsp/restaurants.jsp")
-               .forward(request, response);
+            if (keyword != null && !keyword.trim().isEmpty()) {
+
+                restaurants = dao.searchRestaurants(keyword.trim());
+
+                request.setAttribute(
+                    "searchKeyword",
+                    keyword.trim()
+                );
+
+            } else {
+
+                restaurants = dao.getAllRestaurants();
+
+            }
+
+            request.setAttribute(
+                "restaurants",
+                restaurants
+            );
+
+            request.getRequestDispatcher(
+                "/jsp/dashboard.jsp"
+            ).forward(request, response);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            throw new ServletException(
+                "Error loading restaurants",
+                e
+            );
+        }
     }
 }
